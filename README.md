@@ -18,6 +18,10 @@ curl http://localhost:8080/uba/datagen\?size\=1
 大批量请求
 ab -n 500 -c 5 http://localhost:8080/uba/datagen\?size\=1
 ```
+## 请求效果
+
+![img.png](img.png)
+
 
 ## DevTools测试
 
@@ -92,9 +96,10 @@ PUT db-info
 
 ## 观察
 
-URL 
+URL
 
 http://localhost:5601/app/dashboards#/view/fd00b980-8814-11ed-87ff-fd23a312ba6c?_g=(filters:!(),query:(language:kuery,query:''),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_a=(description:'',filters:!(),fullScreenMode:!f,options:(hidePanelTitles:!f,useMargins:!t),query:(language:kuery,query:''),tags:!(),timeRestore:!f,title:UpgradeMonitor,viewMode:view)
+
 ```bash
 
 
@@ -114,12 +119,32 @@ Timelion 2:
 ```bash
 .es(index=http-logs-*,timefield=timestamp,metric=count).label("总请求数"),
 .es(index=http-logs-*,timefield=timestamp,metric=count,q=response.status:200).label(正常请求数).legend().color(#00FF00),
-.es(index=http-logs-*,timefield=timestamp,metric=count,q=response.status:>200).color(#F44336).label(异常请求数)
+.es(index=http-logs-*,timefield=timestamp,metric=count,q=response.status:>200&request.uri:"http://localhost:8080/report/product/top10").color(#F44336).label(异常请求数)
 .es(index=db-info,timefield=timestamp,metric=max:threadCounts).color(#F44336).label(数据库服务器请求数)
 ,
 
 ```
 
+### 请求耗时的Timelion
+
+```bash
+#耗时
+.es(index=http-logs-*,timefield=timestamp,metric=max:timeTaken,q=response.status:200).label(最高请求耗时),
+.es(index=http-logs-*,timefield=timestamp,metric=min:timeTaken,q=response.status:200).label(最低请求耗时),
+.es(index=http-logs-*,timefield=timestamp,metric=avg:timeTaken,q=response.status:200).label(平均请求耗时)
+
+```
+
+### 错误率 Timelion
+
+```bash
+#耗时
+.es(index=http-logs-*,timefield=timestamp,metric=max:timeTaken,q=response.status:200).label(最高请求耗时),
+.es(index=http-logs-*,timefield=timestamp,metric=min:timeTaken,q=response.status:200).label(最低请求耗时),
+.es(index=http-logs-*,timefield=timestamp,metric=avg:timeTaken,q=response.status:200).label(平均请求耗时),
+
+
+```
 
 ![请求时序图](images/请求时序图.png)
 
