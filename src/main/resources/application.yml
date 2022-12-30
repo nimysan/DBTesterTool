@@ -1,0 +1,30 @@
+management:
+  endpoint:
+    httptrace:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include:
+          - '*'
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/cutestore
+    username: test
+    password: newpass
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MariaDB102Dialect
+elasticsearch:
+  host: localhost:9200
+
+cute:
+  dbhost: localhost
+  monitor:
+    domains:
+      - www.google.com
+      - www.amazon.com
+      - www.baidu.com
