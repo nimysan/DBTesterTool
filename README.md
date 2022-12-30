@@ -129,4 +129,12 @@ Timelion 2:
 
 select count(*) from user_behavior;
 select count(product_id), product_id from user_behavior group by product_id order by  count(product_id) desc;
+
+#postgresql
+psql -h for-upgrade-test.cypjqpec31mg.ap-southeast-1.rds.amazonaws.com -p 5432 -U postgres runoobdb
 ```
+
+## 各种错误
+
+1. org.postgresql.util.PSQLException: 尝试连线已失败。
+2. 
