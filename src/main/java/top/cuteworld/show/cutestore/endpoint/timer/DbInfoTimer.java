@@ -35,8 +35,19 @@ public class DbInfoTimer {
             String dbType = jdbcTemplate.getDataSource().getConnection().getMetaData().getDatabaseProductName();
             isPostgresServer = "PostgreSQL".equals(dbType);
 
-//            log.info(" database produce name --- {}", jdbcTemplate.getDataSource().getConnection().getMetaData().getDatabaseProductName());
-
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (true) {
+                        DbInfoTimer.this.doMetrics();
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -48,9 +59,10 @@ public class DbInfoTimer {
         this.esMetricsRepository = ipParseResultRepository;
     }
 
-    @Scheduled(cron = "0/1 * * ? * ?")
-    public void test() {
+    //    @Scheduled(cron = "0/1 * * ? * ?") //Spring Schedule会因为别的线程卡住， 自己实现定时器
+    public void doMetrics() {
         Integer count = 0;
+        jdbcTemplate.setQueryTimeout(1);
         if (isPostgresServer) {
             count = jdbcTemplate.query(POSTGRES_SQL, new ResultSetExtractor<Integer>() {
                 @Override

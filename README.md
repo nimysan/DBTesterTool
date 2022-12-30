@@ -18,10 +18,10 @@ curl http://localhost:8080/uba/datagen\?size\=1
 大批量请求
 ab -n 500 -c 5 http://localhost:8080/uba/datagen\?size\=1
 ```
+
 ## 请求效果
 
 ![img.png](img.png)
-
 
 ## DevTools测试
 
@@ -148,6 +148,9 @@ Timelion 2:
 
 ![请求时序图](images/请求时序图.png)
 
+PostgreSQL RDS 10 reboot和failover的时候的切换图
+![]![切换](ip_switch.png)
+
 ## 常用命令
 
 ```bash
@@ -159,7 +162,33 @@ select count(product_id), product_id from user_behavior group by product_id orde
 psql -h for-upgrade-test.cypjqpec31mg.ap-southeast-1.rds.amazonaws.com -p 5432 -U postgres runoobdb
 ```
 
+## 结论
+
+HikariCP各参数配置说明: https://github.com/brettwooldridge/HikariCP
+
+> Java程序侧需要30s左右识别新的DNS IP变更
+
+![30s](images/30s-java.png)
+
+> 应用程序无法自行恢复，新的请求一直会进不来
+
+![application_is_stuck.png](images/application_is_stuck.png)
+
 ## 各种错误
 
+---
+
 1. org.postgresql.util.PSQLException: 尝试连线已失败。
-2. 
+
+---
+
+2. java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after
+   30006ms. at com.zaxxer.hikari.pool.HikariPool.createTimeoutException(HikariPool.java:696) ~[HikariCP-4.0.3.jar:na]
+   at com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:197) ~[HikariCP-4.0.3.jar:na]
+   at com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:162) ~[HikariCP-4.0.3.jar:na]
+
+---
+
+3. org.postgresql.util.PSQLException: An I/O error occurred while sending to the backend. at
+   org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:382) ~[postgresql-42.3.8.jar:42.3.8]
+   at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:490) ~[postgresql-42.3.8.jar:42.3.8]

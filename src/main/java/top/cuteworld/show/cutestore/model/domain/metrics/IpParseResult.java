@@ -8,7 +8,8 @@ import lombok.Data;
 public class IpParseResult {
 
     private String dns;
-    private String ip;
+    private String jvmIp;
+    private String nslookupIp;
     private Long timestamp;
 
 
