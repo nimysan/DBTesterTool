@@ -13,6 +13,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class CutestoreApplication implements ApplicationRunner {
 
     public static void main(String[] args) {
+        //禁用本地DNS缓存
+        java.security.Security.setProperty("networkaddress.cache.ttl", "0");
         SpringApplication.run(CutestoreApplication.class, args);
     }
 
