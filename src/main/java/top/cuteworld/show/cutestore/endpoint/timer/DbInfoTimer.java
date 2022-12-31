@@ -31,26 +31,22 @@ public class DbInfoTimer {
 
     @PostConstruct
     public void post() {
-        try {
-            String dbType = jdbcTemplate.getDataSource().getConnection().getMetaData().getDatabaseProductName();
-            isPostgresServer = "PostgreSQL".equals(dbType);
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (true) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        jdbcTemplate.setQueryTimeout(1000);
+                        String dbType = jdbcTemplate.getDataSource().getConnection().getMetaData().getDatabaseProductName();
+                        isPostgresServer = "PostgreSQL".equals(dbType);
                         DbInfoTimer.this.doMetrics();
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        log.error("DB timer", e);
                     }
                 }
-            }).start();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            }
+        }).start();
     }
 
     public DbInfoTimer(MonitorSettings monitorSettings, JdbcTemplate jdbcTemplate, ESMetricsRepository ipParseResultRepository) {
@@ -67,6 +63,7 @@ public class DbInfoTimer {
             count = jdbcTemplate.query(POSTGRES_SQL, new ResultSetExtractor<Integer>() {
                 @Override
                 public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+//                    resultSet.getc]
                     if (resultSet != null && resultSet.next()) {
                         int activeThreadCount = resultSet.getInt(1);
                         return activeThreadCount;

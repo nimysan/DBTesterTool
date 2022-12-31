@@ -21,6 +21,18 @@ public class RestOperation {
 
     private final UBAGenerator ubaGenerator;
 
+    @GetMapping("/sample/read")
+    public List<ProductCount> readSample() {
+        return userBehaviorApplication.report();
+    }
+
+    @GetMapping("/sample/write")
+    public int wirteSample() {
+        int size = 10;
+        ubaGenerator.gen(size);
+        return size;
+    }
+
     @GetMapping("/uba/datagen")
     public void generate(@RequestParam int size) {
         ubaGenerator.gen(size);
